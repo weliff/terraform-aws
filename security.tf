@@ -22,3 +22,64 @@ resource "aws_security_group" "database" {
     }
 }
 
+resource "aws_security_group" "allow_outbound" {
+    vpc_id = "${aws_vpc.main.id}"
+    name = "hibicode_allow_outbound"
+
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = -1
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+}
+
+resource "aws_security_group" "cluster_communication" {
+    vpc_id = "${aws_vpc.main.id}"
+    name = "hibicode_cluster_communication"
+
+    ingress {
+        from_port = 2377
+        to_port = 2377
+        protocol = "tcp"
+        self = true
+    }
+
+    ingress {
+        from_port = 7946
+        to_port = 7946
+        protocol = "tcp"
+        self = true
+    }
+
+
+    ingress {
+        from_port = 7946
+        to_port = 7946
+        protocol = "udp"
+        self = true
+    }
+
+
+    ingress {
+        from_port = 4789
+        to_port = 4789
+        protocol = "udp"
+        self = true
+    }
+}
+
+resource "aws_security_group" "allow_portainer" {
+    vpc_id = "${aws_vpc.main.id}"
+    name = "hibicode_allow_portainer"
+
+    ingress {
+        from_port = 9000
+        to_port = 9000
+        protocol = "tcp"
+        cidr_blocks = ["${var.my_public_ip}"]
+    }
+  
+}
+
+
